@@ -30,3 +30,44 @@ App Engine application for the Udacity training course.
 [4]: https://console.developers.google.com/
 [5]: https://localhost:8080/
 [6]: https://developers.google.com/appengine/docs/python/endpoints/endpoints_tool
+
+## Testing
+
+To test the API endpoints methods visit conference-central-1118.appspot.com/_ah/api/explorer
+
+
+## Task 1 Design choices
+
+1. Sessions are implemented as a child the conference class to link them to the conference in which they take place.
+I chose to implement sessions this way because it makes it very simple to link the two together.
+When fetching sessions for a given conference I used an ancestor query to just fetch all the children of the parent class conference.
+This was the main appeal of making sessions a child of a conference.
+In general it just made the whole process of querying sessions much simpler in the long run.
+
+2. Speakers however are not implement as a child of session, nor are they directly linked to a given user.
+This was done because I feel like it would get annoying for users to have to be registered on the website to be speaker.
+What if for example you get some one like Bill Gates to give a lecture, you would have to either have him sign up, or create an account for him.
+That could get cumbersome when creating sessions. 
+
+3. Session types are implemented simply as string for the same reason.
+If sessions were an enumeration, or set value of some kind it might be too limiting.
+Letting users put what ever they want as a session type really puts the control in their hands as to what kind of session they want to run.
+
+## Task 3 Design choices
+
+1. Two additional queries were added, getSessionsByCity, and getSessionsByTopic.
+These two queries were added to allow users to find more appealing conference sessions.
+An example of a user wanting something like this could be a conference with a more broad topic and a lot of sub topics.
+With getSessionsByTopic the user can easily find which sessions in that conference they would want to attend.
+It isn't just limited to one conference though, this query grabs all sessions with that topic across all conferences.
+
+2. getSessionsByCity is maybe a little less useful, but however it offers a different view of events happening in given city.
+If for example you want to know more specific information about what's going in Paris you can instead filter which sesssions are happening there.
+You could find all the conferences happening there as well, but that may not really give as specific information as you may want.
+
+3. getNonWorkshopSessions making a query to find all sessions after 7pm and who's type isn't workshop was quite tricky actually.
+The main problem with implementing this is that you can't have two different equality filters applied to a given query.
+The way I chose to solve this problem is first fetch all sessions before 7pm, then instead of filtering that query again, I loop through the list of results to find the ones whos typ isn't workshop.
+Technically making datastore do all the filtering may be a bit more efficient, but applying multiple equality filters isn't allowed in datastore.
+One more problem I ran into when implementing this is that since I allow types of sessions to be any string some people may capitalize the 'w' in workshop or they may not.
+To solve this, I convert the typeOfSession string all lower case before checking it against 'workshop'. 
