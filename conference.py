@@ -396,20 +396,24 @@ class ConferenceApi(remote.Service):
         sf = SessionForm()
         for field in sf.all_fields():
             if hasattr(session, field.name):
-                # convert Date to date string; just copy others
+                # convert Date to date string
                 if field.name == "date":
                     setattr(sf, field.name, str(getattr(session, field.name)))
+                # convert startTime to time string
+                elif field.name == "startTime":
+                    setattr(sf, field.name, str(getattr(session, field.name)))
+                # convert duration to time string
+                elif field.name == "duration"
+                    setattr(sf, field.name, str(getattr(session, field.name)))
+                elif field.name == "speaker":
+                    setattr(sf, field.name, session.speaker)
+                elif field.name == "websafeKey":
+                    setattr(sf, field.name, session.key.urlsafe())
+                elif field.name == "name":
+                    setattr(sf, field.name, session.name)
+                # any other field not specific above just copy
                 else:
                     setattr(sf, field.name, getattr(session, field.name))
-            elif field.name == "speaker":
-                setattr(sf, field.name, speaker.name)
-            elif field.name == "websafeKey":
-                setattr(sf, field.name, session.key.urlsafe())
-            elif field.name == "name":
-                setattr(sf, field.name, session.name)
-                # convery startTime to time string
-            elif field.name == "startTime":
-                setattr(sf, field.name, str(getattr(session, field.name)))
         sf.check_initialized()
         return sf
 
@@ -463,8 +467,7 @@ class ConferenceApi(remote.Service):
 
         # set organizerUserId to the current user
         data['organizerUserId'] = request.organizerUserId = user_id
-        # generate Profile Key based on user ID and Session
-        # ID based on Profile key get Session key from ID
+        # generate session key
         p_key = conf.key
         s_id = Session.allocate_ids(size=1, parent=p_key)[0]
         s_key = ndb.Key(Session, s_id, parent=p_key)
@@ -475,7 +478,8 @@ class ConferenceApi(remote.Service):
         speaker_name = data['speaker']
 
         # get sessions a speaker is in, if more than 1 set as featured speaker
-        s_sessions = Session.query(Session.speaker == speaker_name).fetch()
+        s_sessions = Session.query(
+            Session.speaker == speaker_name, ancestor=p_key).fetch()
         if len(s_sessions) > 1:
             session_list = [str(session.name) for session in s_sessions]
             # add speaker to taskqueue
@@ -507,12 +511,8 @@ class ConferenceApi(remote.Service):
 
         # get conference object from request
         confwebsafeKey = ndb.Key(urlsafe=request.websafeConferenceKey).get()
-        if not confwebsafeKey:
-            raise endpoints.NotFoundException(
-                'No conference found with key: %s'
-                % request.websafeConferenceKey)
 
-        sessions = Session.query(ancestor=confwebsafeKey.key).fetch()
+        sessions = Session.query(ancestor=confwebsafeKey.key)
 
         return SessionForms(items=[self.copySessionToForm(session)
                                    for session in sessions]
@@ -585,7 +585,9 @@ class ConferenceApi(remote.Service):
         """
 
         # fetch a list of sessions after 7pm
-        sessions = Session.query(Session.startTime <= time(hour=19)).fetch()
+        sessions = Session.query(Session.startTime <= time(hour=19))
+
+        sessions = sessions.filter(Session.startTime != None).fetch()
 
         session_list = []
 
@@ -654,7 +656,7 @@ class ConferenceApi(remote.Service):
         cache = {}
         cache['speaker'] = speaker_name
         cache['session_list'] = session_list
-
+        memcache.set(MEMCACHE_FEATURED_SPEAKER_KEY, cache)
         return cache
 
     @endpoints.method(message_types.VoidMessage, StringMessage,
