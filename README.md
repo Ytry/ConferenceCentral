@@ -53,6 +53,15 @@ That could get cumbersome when creating sessions.
 If sessions were an enumeration, or set value of some kind it might be too limiting.
 Letting users put what ever they want as a session type really puts the control in their hands as to what kind of session they want to run.
 
+4. duration is stored as a time field because it would make it easier to sort sessions by duration. If it were stored as a string or an int it could get a little messy with formatting. Some users my format it differently, and that would lead to potentially incorect data during the filtering / sorting process if there were queries on the duration field.
+
+5. startTime is stored as a time field for much the same reason as duration. It is especially beneifical for startTime in the getNonWorkshopSessions method. In this method we are making sure start time is before 7pm. Making it useful to have it stored as a time field. Time and date fields could also be useful if I had implemented functionalty to check if a session had already taken place. That was beyond the scope of what I wanted to do with this project though, but it is nice to have the data stored in a way that would allow for that to happen in the future if I wanted to implement it. This the same reason for data and duration being date and time fields respectively. Even though I may not use the functionality of these types fully, I think it is good practice to store them in this manor in case I wanted to in the future.
+ 
+6. Once again Date is stored as a date field to make sure it isn't input in an improper format, and to make it easily queryable as a date to check things like how many days till a conference / session. Storing it as a date field instead of a string also allows for me to use it in more in depth ways in the future had I wanted to much the same as I explained with startTime and duration.
+
+
+
+
 ## Task 3 Design choices
 
 1. Two additional queries were added, getSessionsByCity, and getSessionsByTopic.
@@ -66,8 +75,8 @@ If for example you want to know more specific information about what's going in 
 You could find all the conferences happening there as well, but that may not really give as specific information as you may want.
 
 3. getNonWorkshopSessions making a query to find all sessions after 7pm and who's type isn't workshop was quite tricky actually.
-The main problem with implementing this is that you can't have two different equality filters applied to a given query.
+The main problem with implementing this is that you can't have two different inequality filters applied to two differnt fields.
 The way I chose to solve this problem is first fetch all sessions before 7pm, then instead of filtering that query again, I loop through the list of results to find the ones whos typ isn't workshop.
-Technically making datastore do all the filtering may be a bit more efficient, but applying multiple equality filters isn't allowed in datastore.
+Technically making datastore do all the filtering may be a bit more efficient, but applying multiple inequality filters to two different fields in a given query isn't allowed in datastore.
 One more problem I ran into when implementing this is that since I allow types of sessions to be any string some people may capitalize the 'w' in workshop or they may not.
 To solve this, I convert the typeOfSession string all lower case before checking it against 'workshop'. 
