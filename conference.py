@@ -584,7 +584,7 @@ class ConferenceApi(remote.Service):
         the session type is not workshop
         """
 
-        # fetch a list of sessions after 7pm
+        # fetch a list of sessions before 7pm
         sessions = Session.query(Session.startTime <= time(hour=19))
 
         sessions = sessions.filter(Session.startTime != None).fetch()
