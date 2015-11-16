@@ -135,7 +135,6 @@ class Session(Conference):
     typeOfSession = ndb.StringProperty(required=True)
     date = ndb.DateProperty()
     startTime = ndb.TimeProperty()
-    organizerUserId = ndb.StringProperty()
     websafeKey = ndb.StringProperty()
     topic = ndb.StringProperty()
     city = ndb.StringProperty()
@@ -151,9 +150,6 @@ class SessionForm(messages.Message):
     date = messages.StringField(6)  # date property
     startTime = messages.StringField(7)  # time property
     websafeKey = messages.StringField(8)
-    organizerUserId = messages.StringField(9)
-    topic = messages.StringField(10)
-    city = messages.StringField(11)
 
 
 class SessionForms(messages.Message):
