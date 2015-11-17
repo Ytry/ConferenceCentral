@@ -52,6 +52,8 @@ MEMCACHE_ANNOUNCEMENTS_KEY = "RECENT_ANNOUNCEMENTS"
 MEMCACHE_FEATURED_SPEAKER_KEY = "FEATURED_SPEAKER"
 ANNOUNCEMENT_TPL = ('Last chance to attend! The following conferences '
                     'are nearly sold out: %s')
+FEATURED_SPEAKER_TPL = ('The current featured speak is %s speaking in '
+                        'speaking in the following sessions: %s')
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DEFAULTS = {
@@ -653,17 +655,21 @@ class ConferenceApi(remote.Service):
     @staticmethod
     def cacheFeaturedSpeaker(speaker_name, session_list):
         """Set featured speaker to memchache"""
-        cache = {}
-        cache['speaker'] = speaker_name
-        cache['session_list'] = session_list
-        memcache.set(MEMCACHE_FEATURED_SPEAKER_KEY, cache)
-        return cache
+
+        announcement = FEATURED_SPEAKER_TPL % (
+            speaker_name, ', '.join(session.name for session in session_list))
+
+        memcache.set(MEMCACHE_FEATURED_SPEAKER_KEY, announcement)
+
+        return announcement
 
     @endpoints.method(message_types.VoidMessage, StringMessage,
                       path='getFeaturedSpeaker',
                       http_method='GET', name='getFeaturedSpeaker')
     def getFeaturedSpeaker(self, request):
         """Return Announcement from memcache."""
+
+        
         return StringMessage(
             data=memcache.get(MEMCACHE_FEATURED_SPEAKER_KEY) or "")
 
