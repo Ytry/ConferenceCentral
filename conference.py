@@ -654,7 +654,9 @@ class ConferenceApi(remote.Service):
 
     @staticmethod
     def cacheFeaturedSpeaker(speaker_name, session_list):
-        """Set featured speaker to memchache"""
+        """create announcement & assign to memcache; used by
+        memcache cron job.
+        """
 
         announcement = FEATURED_SPEAKER_TPL % (
             speaker_name, ', '.join(session.name for session in session_list))
