@@ -403,7 +403,7 @@ class ConferenceApi(remote.Service):
                 elif field.name == "startTime":
                     setattr(sf, field.name, str(getattr(session, field.name)))
                 # convert duration to time string
-                elif field.name == "duration"
+                elif field.name == "duration":
                     setattr(sf, field.name, str(getattr(session, field.name)))
                 elif field.name == "speaker":
                     setattr(sf, field.name, session.speaker)
