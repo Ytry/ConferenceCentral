@@ -569,7 +569,17 @@ class ConferenceApi(remote.Service):
                       name='getSessionsByTopic')
     def getSessionsByTopic(self, request):
         """Return session forms for all sessions with requested topic"""
-        sessions = Session.query(Session.topic == request.topic).fetch()
+        conferences = Conference.query(Conference.topics == request.topic)
+
+        if not conferences:
+            raise endpoints.NotFoundException(
+                'No conferences with topic %s' % request.topic)
+
+
+        sessions = []
+
+        for conference in conferences:
+            sessions += Session.query(ancestor=conference.key).fetch()
 
         return SessionForms(items=[self.copySessionToForm(session)
                                    for session in sessions]
