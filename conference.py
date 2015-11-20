@@ -663,7 +663,6 @@ class ConferenceApi(remote.Service):
 
         memcache.set(MEMCACHE_FEATURED_SPEAKER_KEY, announcement)
 
-        return announcement
 
     @endpoints.method(message_types.VoidMessage, StringMessage,
                       path='getFeaturedSpeaker',
@@ -671,7 +670,7 @@ class ConferenceApi(remote.Service):
     def getFeaturedSpeaker(self, request):
         """Return Announcement from memcache."""
 
-        
+
         return StringMessage(
             data=memcache.get(MEMCACHE_FEATURED_SPEAKER_KEY) or "")
 
