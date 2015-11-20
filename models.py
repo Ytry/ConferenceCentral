@@ -45,7 +45,6 @@ class ProfileForm(messages.Message):
     teeShirtSize = messages.EnumField('TeeShirtSize', 3)
     conferenceKeysToAttend = messages.StringField(4, repeated=True)
     sessionKeysToAttend = messages.StringField(5, repeated=True)
-    websafeSessionKey = messages.StringField(6, repeated=True)
 
 
 class StringMessage(messages.Message):
@@ -136,8 +135,6 @@ class Session(Conference):
     date = ndb.DateProperty()
     startTime = ndb.TimeProperty()
     websafeKey = ndb.StringProperty()
-    topic = ndb.StringProperty()
-    city = ndb.StringProperty()
 
 
 class SessionForm(messages.Message):
