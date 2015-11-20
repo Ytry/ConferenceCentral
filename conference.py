@@ -546,7 +546,18 @@ class ConferenceApi(remote.Service):
                       name='getSessionsByCity')
     def getSessionsByCity(self, request):
         """Return session forms for all sessions in requested city"""
-        sessions = Session.query(Session.city == request.city).fetch()
+        conferences = Conference.query(Conference.city == request.city)
+
+        if not conferences:
+            raise endpoints.NotFoundException(
+                'No conferences in %s' % request.city)
+
+
+        sessions = []
+
+        for conference in conferences:
+            sessions += Session.query(ancestor=conference.key).fetch()
+
 
         return SessionForms(items=[self.copySessionToForm(session)
                                    for session in sessions]
