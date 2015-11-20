@@ -649,9 +649,7 @@ class ConferenceApi(remote.Service):
         prof = self._getProfileFromUser()
 
         # fetch list of web safe session keys from profile
-        ses_keys = [ndb.Key(
-            urlsafe=wssk) for wssk in prof.sessionKeysToAttend]
-
+        ses_keys = [ndb.Key(urlsafe=wssk) for wssk in prof.sessionKeysToAttend]
         sessions = ndb.get_multi(ses_keys)
 
         return SessionForms(items=[self.copySessionToForm(session)
