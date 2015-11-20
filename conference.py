@@ -473,15 +473,6 @@ class ConferenceApi(remote.Service):
 
         speaker_name = data['speaker']
 
-        # get sessions a speaker is in, if more than 1 set as featured speaker
-        s_sessions = Session.query(
-            Session.speaker == speaker_name, ancestor=p_key).fetch()
-        if len(s_sessions) > 1:
-            session_list = [str(session.name) for session in s_sessions]
-            # add speaker to taskqueue
-            taskqueue.add(params={'speaker_name': speaker_name,
-                                  'session_list': [session_list]},
-                          url='/tasks/set_featured_speaker')
 
         # create Session and return (modified) SessionForm
         Session(**data).put()
@@ -651,6 +642,17 @@ class ConferenceApi(remote.Service):
         """create announcement & assign to memcache; used by
         memcache cron job.
         """
+
+        # get sessions a speaker is in, if more than 1 set as featured speaker
+        s_sessions = Session.query(
+            Session.speaker == speaker_name).fetch()
+
+        if len(s_sessions) > 1:
+            session_list = [str(session.name) for session in s_sessions]
+            # add speaker to taskqueue
+            taskqueue.add(params={'speaker_name': speaker_name,
+                                  'session_list': [session_list]},
+                          url='/tasks/set_featured_speaker')
 
         announcement = FEATURED_SPEAKER_TPL % (
             speaker_name, ', '.join(session.name for session in session_list))
