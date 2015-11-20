@@ -412,6 +412,7 @@ class ConferenceApi(remote.Service):
                 # any other field not specific above just copy
                 else:
                     setattr(sf, field.name, getattr(session, field.name))
+
         sf.check_initialized()
         return sf
 
@@ -463,15 +464,12 @@ class ConferenceApi(remote.Service):
             data['startTime'] = datetime.strptime(
                 data['startTime'][0:6], "%H:%M").time()
 
-        # set organizerUserId to the current user
-        data['organizerUserId'] = request.organizerUserId = user_id
         # generate session key
         p_key = conf.key
         s_id = Session.allocate_ids(size=1, parent=p_key)[0]
         s_key = ndb.Key(Session, s_id, parent=p_key)
         data['key'] = s_key
         websafeSessionKey = s_key.urlsafe()
-        data['websafeKey'] = websafeSessionKey
 
         speaker_name = data['speaker']
 
