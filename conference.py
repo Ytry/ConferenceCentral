@@ -68,8 +68,6 @@ DEFAULT_SESSION = {
     "typeOfSession": "Default typeOfSession",
     "name": "Default name",
     "speaker": "Default Speaker",
-    "topic": "Default Topic",
-    "city": "Default City",
 }
 
 OPERATORS = {
