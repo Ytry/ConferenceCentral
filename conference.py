@@ -511,12 +511,13 @@ class ConferenceApi(remote.Service):
                       name='getConferenceSessionByType')
     def getConferenceSessionsByType(self, request):
         """Return a list of sessions of a specified type in a conference."""
-        confwebsafeKey = ndb.Key(urlsafe=request.websafeConferenceKey).get()
-        if not confwebsafeKey:
-            raise endpoints.NotFoundException(
-                'No conference found with key: %s'
-                % request.websafeConferenceKey)
+        try:
+            confwebsafeKey = ndb.Key(urlsafe=request.websafeConferenceKey).get()
 
+        except TypeError:
+            raise endpoints.NotFoundException('No conference key provided')
+            
+            
         sessions = Session.query(ancestor=confwebsafeKey.key)
 
         sessions = sessions.filter(
@@ -525,6 +526,7 @@ class ConferenceApi(remote.Service):
         return SessionForms(items=[self.copySessionToForm(session)
                                    for session in sessions]
                             )
+
 
     @endpoints.method(SESSION_GET_SPEAKER_REQUEST, SessionForms,
                       path='getSessionsBySpeaker',
