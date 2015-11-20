@@ -409,8 +409,6 @@ class ConferenceApi(remote.Service):
                     setattr(sf, field.name, session.speaker)
                 elif field.name == "websafeKey":
                     setattr(sf, field.name, session.key.urlsafe())
-                elif field.name == "name":
-                    setattr(sf, field.name, session.name)
                 # any other field not specific above just copy
                 else:
                     setattr(sf, field.name, getattr(session, field.name))
