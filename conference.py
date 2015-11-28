@@ -526,6 +526,8 @@ class ConferenceApi(remote.Service):
 
         except BadRequestError:
             raise endpoints.NotFoundException('No conference key provided')
+        except TypeError:
+            raise endpoints.NotFoundException('No conference key provided')
             
             
         sessions = Session.query(ancestor=confwebsafeKey.key)
