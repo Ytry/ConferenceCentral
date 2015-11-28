@@ -20,6 +20,7 @@ from protorpc import remote
 from google.appengine.api import memcache
 from google.appengine.api import taskqueue
 from google.appengine.ext import ndb
+from google.appengine.ext.db import BadRequestError
 
 from models import ConflictException
 from models import Profile
@@ -523,7 +524,7 @@ class ConferenceApi(remote.Service):
         try:
             confwebsafeKey = ndb.Key(urlsafe=request.websafeConferenceKey).get()
 
-        except TypeError:
+        except BadRequestError:
             raise endpoints.NotFoundException('No conference key provided')
             
             
