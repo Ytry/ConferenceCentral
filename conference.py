@@ -53,7 +53,7 @@ MEMCACHE_FEATURED_SPEAKER_KEY = "FEATURED_SPEAKER"
 ANNOUNCEMENT_TPL = ('Last chance to attend! The following conferences '
                     'are nearly sold out: %s')
 FEATURED_SPEAKER_TPL = ('The current featured speak is %s speaking in '
-                        'speaking in the following sessions: %s')
+                        'the following sessions: %s')
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DEFAULTS = {
