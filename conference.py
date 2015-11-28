@@ -474,6 +474,15 @@ class ConferenceApi(remote.Service):
         speaker_name = data['speaker']
 
 
+        # get sessions a speaker is in, if more than 1 set as featured speaker
+
+
+        # add speaker to taskqueue
+        taskqueue.add(params={'speaker_name': speaker_name,
+                              'session_info': repr(request)},
+                      url='/tasks/set_featured_speaker')
+
+
         # create Session and return (modified) SessionForm
         Session(**data).put()
         session = s_key.get()
